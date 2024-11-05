@@ -51,7 +51,7 @@ st.markdown("""
         color: white;
     }
     .progress-bar {
-        background-color: #333;
+        background-color: #37383C;
         border-radius: 25px;
         width: 100%;
         height: 20px;
