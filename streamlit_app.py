@@ -30,6 +30,61 @@ df = process_appointments_data(date)
 
 from features.progress_bar import create_card  # Import create_card from progress_bar
 
+st.markdown("""
+    <style>
+    .card {
+        background-color: #41434A;
+        padding: 10px;
+        border-radius: 10px;
+        margin-bottom: 5px;
+        color: white;
+        position: relative;
+    }
+    .profile-section {
+        display: flex;
+        align-items: center;
+        margin-bottom: 8px;
+    }
+    .profile-pic {
+        border-radius: 50%;
+        width: 28px;
+        height: 28px;
+        margin-right: 15px;
+    }
+    .name {
+        font-size: 16px;
+        font-weight: bold;
+    }
+    .appointments {
+        font-size: 16px;
+        margin-bottom: 10px;
+        color: white;
+    }
+    .progress-bar {
+        background-color: #37383C;
+        border-radius: 25px;
+        width: 100%;
+        height: 20px;
+        position: relative;
+        margin-bottom: 10px;
+    }
+    .progress-bar-fill {
+        background-color: #C34547;
+        height: 100%;
+        border-radius: 25px;
+    }
+    .goal {
+        position: absolute;
+        right: 5px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 16px;
+        color: white;
+        font-weight: bold;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
 columns = st.columns(3)
 for idx, row in df.iterrows():
     with columns[idx % 3]:
