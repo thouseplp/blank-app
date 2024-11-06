@@ -21,6 +21,20 @@ hide_streamlit_style = """
     header {visibility: hidden;}
     .css-10trblm {padding-top: 0px; padding-bottom: 0px;}
     .css-1d391kg {padding-top: 0px !important;}
+    
+    /* Custom Footer Message */
+    footer:after {
+        content: 'goodbye'; 
+        visibility: visible;
+        display: block;
+        position: relative;
+        padding: 5px;
+        top: 2px;
+        text-align: center;
+        font-size: 14px;
+        color: #ffffff;
+        background-color: #41434A;
+    }
     </style>
 """
 st.markdown(hide_streamlit_style, unsafe_allow_html=True)
