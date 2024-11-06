@@ -91,6 +91,14 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
+st.markdown("""
+    <style>
+    ._container_51w34_1 {
+        display: none !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
 columns = st.columns(3)
 for idx, row in df.iterrows():
     with columns[idx % 3]:
