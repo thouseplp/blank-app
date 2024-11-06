@@ -115,4 +115,6 @@ def process_appointments_data(selected_date):
     # Calculate Percent of Total
     df_groupby['Percent of Total'] = (df_groupby['ID'] / df_groupby['GOALS']).round(2)
 
+    df_groupby = df_groupby.sort_values(by='AREA')
+
     return df_groupby
