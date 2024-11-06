@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 from datetime import datetime
+import pytz
 from snowflake.snowpark import Session
 from snowflake.snowpark.functions import col
 from transformation.data import process_appointments_data  # Import the function
@@ -24,7 +25,12 @@ hide_streamlit_style = """
 """
 st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 
-date = st.date_input("Select your date")
+local_tz = pytz.timezone('America/Los_Angeles')  # Replace with your time zone
+
+# Get the current date and time in your local time zone
+now = datetime.now(local_tz)
+
+date = st.date_input("Select a date", value=now.date())
 
 df = process_appointments_data(date)
 
