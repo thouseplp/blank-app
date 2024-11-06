@@ -55,13 +55,36 @@ def process_appointments_data(selected_date):
         'Billings': 5,
         'Utah': 5
     }
+    # Profile picture URLs mapping
+    profile_pictures = {
+        'Salem': 'https://res.cloudinary.com/dwuzrptk6/image/upload/v1730863720/salem_eckoe1.png',
+        'Portland North': 'https://res.cloudinary.com/dwuzrptk6/image/upload/v1730863714/portland_iwid9m.png',  # Using Portland image
+        'Des Moines': 'https://res.cloudinary.com/dwuzrptk6/image/upload/v1730863717/des_moines_mcwvbz.png',
+        'Minneapolis': 'https://res.cloudinary.com/dwuzrptk6/image/upload/v1730863713/minneapolis_jlnpqw.png',
+        'Portland': 'https://res.cloudinary.com/dwuzrptk6/image/upload/v1730863714/portland_iwid9m.png',
+        'Pasco': 'https://res.cloudinary.com/dwuzrptk6/image/upload/v1730863718/pasco_fxdzsg.png',
+        'Medford': 'https://res.cloudinary.com/dwuzrptk6/image/upload/v1730863720/medford_ks5ol1.png',
+        'Bozeman': 'https://res.cloudinary.com/dwuzrptk6/image/upload/v1730863714/bozeman_z1dcyw.png',
+        'Cincinnati': None,  # No URL provided
+        'Helena': 'https://res.cloudinary.com/dwuzrptk6/image/upload/v1730863713/helena_b0lpfy.png',
+        'Cedar Rapids': 'https://res.cloudinary.com/dwuzrptk6/image/upload/v1730865480/Group_1128_bckfag.png',
+        'Missoula': 'https://res.cloudinary.com/dwuzrptk6/image/upload/v1730863715/missoulda_lmfros.png',  # Assuming misspelling
+        'Puget Sound': None,  # No specific URL provided
+        'Spokane': 'https://res.cloudinary.com/dwuzrptk6/image/upload/v1730863715/spokane_i8tixp.png',
+        'Bend': 'https://res.cloudinary.com/dwuzrptk6/image/upload/v1730863714/bend_dvre85.png',
+        'Billings': 'https://res.cloudinary.com/dwuzrptk6/image/upload/v1730863716/billings_hezzk6.png',
+        'Utah': None  # No URL provided
+    }
 
+    # Default profile picture URL for areas without a specific image
+    default_profile_picture = 'https://res.cloudinary.com/dwuzrptk6/image/upload/v1730865202/Group_1127_zhbvez.png'
+    
     # Create a date range for the past 30 days
     date_range = pd.date_range(end=datetime.today(), periods=30)
 
     # Create goals_df to include each date in the date_range
     goals_df = pd.DataFrame(
-        [(area, goal, date.date(), 'https://i.ibb.co/5R9N3Bs/DAILY-SET-GOALS.png') 
+        [(area, goal, date.date(), profile_pictures.get(area) if profile_pictures.get(area) else default_profile_picture) 
          for area, goal in goals.items() for date in date_range],
         columns=['AREA', 'GOALS', 'CREATED_AT', 'PROFILE_PICTURE']
     )

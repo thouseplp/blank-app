@@ -53,8 +53,8 @@ st.markdown("""
     }
     .profile-pic {
         border-radius: 50%;
-        width: 28px;
-        height: 28px;
+        width: 45px;
+        height: 45px;
         margin-right: 15px;
     }
     .name {
