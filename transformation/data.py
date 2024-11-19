@@ -4,7 +4,6 @@ import numpy as np
 from datetime import datetime
 from snowflake.snowpark import Session
 from snowflake.snowpark.functions import col
-import plotly.graph_objects as go
 
 # Function to create a Snowflake session
 def create_snowflake_session():
