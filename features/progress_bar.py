@@ -23,6 +23,7 @@ def create_card(area, goal, actual, profile_image, name):
     """, unsafe_allow_html=True)
 
 
+
 def sales_target(actual, pace, minimum_target, maximum_target, image, area):
     # Calculate percentages
     today = datetime.today()
@@ -110,18 +111,25 @@ def sales_target(actual, pace, minimum_target, maximum_target, image, area):
         <div style="width: 95%; text-align: left; margin-bottom: 8px; font-size: 18px; font-weight: bold;">
             {actual}<span style="font-size: 14px; font-weight: normal; color: #6E7076;"> on pace to {pace}</span>
         </div>
-        <!-- Progress bar container -->
-        <div style="width: 95%; position: relative; background: #333; border-radius: 20px; height: 20px; overflow: hidden;">
-            <!-- Progress section -->
-            <div style="background: {progress_bar_color}; width: {progress_percentage}%; height: 100%;"></div>
-            <!-- Vertical line at the minimum target mark -->
-            <div style="position: absolute; left: {vertical_line_position}%; top: 0; height: 100%; width: 2px; background-color: #FFFFFF;"></div>
-        </div>
-        <!-- Numbers below the chart -->
-        <div style="width: 95%; display: flex; justify-content: space-between; margin-top: 8px; font-weight: bold; font-size: 14px;">
-            <div style="text-align: left;">0</div>
-            <div style="text-align: center;">{minimum_target}</div>
-            <div style="text-align: right;">{maximum_target}</div>
+        <!-- Progress bar and numbers container -->
+        <div style="width: 95%; position: relative;">
+
+            <!-- Progress bar container -->
+            <div style="width: 100%; background: #333; border-radius: 20px; height: 20px; overflow: hidden; position: relative;">
+                <!-- Progress section -->
+                <div style="background: {progress_bar_color}; width: {progress_percentage}%; height: 100%;"></div>
+                <!-- Vertical line at the minimum target mark -->
+                <div style="position: absolute; left: {vertical_line_position}%; top: 0; height: 100%; width: 2px; background-color: #2C966C;"></div>
+            </div>
+
+            <!-- Numbers below the chart -->
+            <div style="position: relative; width: 100%; height: 20px; margin-top: 8px; font-weight: bold; font-size: 14px;">
+                <!-- Number at minimum target -->
+                <div style="position: absolute; left: {vertical_line_position}%; transform: translateX(-50%); color: #FFFFFF;">{minimum_target}</div>
+                <!-- Number at maximum target -->
+                <div style="position: absolute; right: 0; color: #FFFFFF;">{maximum_target}</div>
+            </div>
+
         </div>
     </div>
     """
