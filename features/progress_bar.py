@@ -23,7 +23,6 @@ def create_card(area, goal, actual, profile_image, name):
     """, unsafe_allow_html=True)
 
 
-
 def sales_target(actual, pace, minimum_target, maximum_target, image, area):
     # Calculate percentages
     today = datetime.today()

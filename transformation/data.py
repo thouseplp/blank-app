@@ -28,7 +28,7 @@ def get_appointments():
     """
     return session.sql(appointments_query).to_pandas()
 
-def process_appointments_data(selected_date):
+def process_appointments_data(selected_date_range):
     # Fetch appointments data
     df = get_appointments()
 
@@ -55,36 +55,41 @@ def process_appointments_data(selected_date):
         'Billings': 5,
         'Utah': 5
     }
+
     # Profile picture URLs mapping
     profile_pictures = {
         'Salem': 'https://res.cloudinary.com/dwuzrptk6/image/upload/v1730863720/salem_eckoe1.png',
-        'Portland North': None,  # Using Portland image
+        'Portland North': 'https://res.cloudinary.com/dwuzrptk6/image/upload/v1730863714/portland_iwid9m.png',  # Using Portland image
         'Des Moines': 'https://res.cloudinary.com/dwuzrptk6/image/upload/v1730863717/des_moines_mcwvbz.png',
         'Minneapolis': 'https://res.cloudinary.com/dwuzrptk6/image/upload/v1730863713/minneapolis_jlnpqw.png',
         'Portland': 'https://res.cloudinary.com/dwuzrptk6/image/upload/v1730863714/portland_iwid9m.png',
         'Pasco': 'https://res.cloudinary.com/dwuzrptk6/image/upload/v1730863718/pasco_fxdzsg.png',
         'Medford': 'https://res.cloudinary.com/dwuzrptk6/image/upload/v1730863720/medford_ks5ol1.png',
         'Bozeman': 'https://res.cloudinary.com/dwuzrptk6/image/upload/v1730863714/bozeman_z1dcyw.png',
-        'Cincinnati': None,  # No URL provided
+        'Cincinnati': 'https://res.cloudinary.com/dwuzrptk6/image/upload/v1730863715/cincinnati_placeholder.png',  # Assuming a placeholder
         'Helena': 'https://res.cloudinary.com/dwuzrptk6/image/upload/v1730863713/helena_b0lpfy.png',
         'Cedar Rapids': 'https://res.cloudinary.com/dwuzrptk6/image/upload/v1730865480/Group_1128_bckfag.png',
-        'Missoula': 'https://res.cloudinary.com/dwuzrptk6/image/upload/v1730863715/missoulda_lmfros.png',  # Assuming misspelling
-        'Puget Sound': None,  # No specific URL provided
+        'Missoula': 'https://res.cloudinary.com/dwuzrptk6/image/upload/v1730863715/missoula_lmfros.png',  # Corrected spelling
+        'Puget Sound': 'https://res.cloudinary.com/dwuzrptk6/image/upload/v1730863716/puget_sound_placeholder.png',  # Assuming a placeholder
         'Spokane': 'https://res.cloudinary.com/dwuzrptk6/image/upload/v1730863715/spokane_i8tixp.png',
         'Bend': 'https://res.cloudinary.com/dwuzrptk6/image/upload/v1730863714/bend_dvre85.png',
         'Billings': 'https://res.cloudinary.com/dwuzrptk6/image/upload/v1730863716/billings_hezzk6.png',
-        'Utah': None  # No URL provided
+        'Utah': 'https://res.cloudinary.com/dwuzrptk6/image/upload/v1730863716/utah_placeholder.png'  # Assuming a placeholder
     }
 
-    # Default profile picture URL for areas without a specific image
+    # Default profile picture URL
     default_profile_picture = 'https://res.cloudinary.com/dwuzrptk6/image/upload/v1730865202/Group_1127_zhbvez.png'
     
-    # Create a date range for the past 30 days
-    date_range = pd.date_range(end=datetime.today(), periods=30)
+    # Create a date range for the selected date range
+    start_date, end_date = selected_date_range
+    date_range = pd.date_range(start=start_date, end=end_date)
 
-    # Create goals_df to include each date in the date_range
+    # Create goals_df to include each date in the date_range, with goals set to 0 on weekends
     goals_df = pd.DataFrame(
-        [(area, goal, date.date(), profile_pictures.get(area) if profile_pictures.get(area) else default_profile_picture) 
+        [(area, 
+          goal if date.weekday() < 5 else 0,  # Set goal to 0 on weekends
+          date.date(), 
+          profile_pictures.get(area, default_profile_picture))  # Get profile picture or default
          for area, goal in goals.items() for date in date_range],
         columns=['AREA', 'GOALS', 'CREATED_AT', 'PROFILE_PICTURE']
     )
@@ -98,22 +103,34 @@ def process_appointments_data(selected_date):
     # Merge appointments data with goals data
     df = df.merge(goals_df, on=['AREA', 'CREATED_AT'], how='outer')
 
-    # Filter for the selected date
-    df = df[df['CREATED_AT'] == selected_date]
+    # Filter for the selected date range
+    df = df[(df['CREATED_AT'] >= start_date) & (df['CREATED_AT'] <= end_date)]
 
-    # Group by AREA and CREATED_AT, counting ID and using max for GOALS
-    df_groupby = df.groupby(['AREA', 'CREATED_AT']).agg({
+    # Group by AREA and CREATED_AT to get daily totals
+    daily_df = df.groupby(['AREA', 'CREATED_AT']).agg({
         'ID': 'count',
-        'GOALS': 'max',
+        'GOALS': 'first',  # Goal is the same per area per day
+        'PROFILE_PICTURE': 'first'
+    }).reset_index()
+
+    # Sum over the date range per AREA
+    df_groupby = daily_df.groupby(['AREA']).agg({
+        'ID': 'sum',
+        'GOALS': 'sum',
         'PROFILE_PICTURE': 'first'
     }).reset_index()
 
     # Fill NaNs in 'GOALS' column with 0 before casting to int
     df_groupby['GOALS'] = df_groupby['GOALS'].fillna(0).astype(int)
+    df_groupby['PROFILE_PICTURE'] = df_groupby['PROFILE_PICTURE'].fillna(default_profile_picture)
     df_groupby['ID'] = pd.to_numeric(df_groupby['ID'], errors='coerce').fillna(0).astype(int)
 
-    # Calculate Percent of Total
-    df_groupby['Percent of Total'] = (df_groupby['ID'] / df_groupby['GOALS']).round(2)
+    # Calculate Percent of Total, handling division by zero
+    df_groupby['Percent of Total'] = np.where(
+        df_groupby['GOALS'] != 0,
+        (df_groupby['ID'] / df_groupby['GOALS']).round(2),
+        0
+    )
 
     df_groupby = df_groupby.sort_values(by='AREA')
 

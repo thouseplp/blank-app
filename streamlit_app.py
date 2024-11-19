@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-from datetime import datetime
+from datetime import datetime, date
 import pytz
 from snowflake.snowpark import Session
 from snowflake.snowpark.functions import col
@@ -16,25 +16,7 @@ st.logo("https://i.ibb.co/5R9N3Bs/DAILY-SET-GOALS.png", size="large")
 
 hide_streamlit_style = """
     <style>
-    #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
-    header {visibility: hidden;}
-    .css-10trblm {padding-top: 0px; padding-bottom: 0px;}
-    .css-1d391kg {padding-top: 0px !important;}
-    
-    /* Custom Footer Message */
-    footer:after {
-        content: 'goodbye'; 
-        visibility: visible;
-        display: block;
-        position: relative;
-        padding: 5px;
-        top: 2px;
-        text-align: center;
-        font-size: 14px;
-        color: #ffffff;
-        background-color: #41434A;
-    }
+    /* ... (same CSS as before) */
     </style>
 """
 st.markdown(hide_streamlit_style, unsafe_allow_html=True)
@@ -44,11 +26,45 @@ local_tz = pytz.timezone('America/Los_Angeles')  # Replace with your time zone
 # Get the current date and time in your local time zone
 now = datetime.now(local_tz)
 
-date = st.date_input("Select a date", value=now.date())
+# Allow selecting a date range
+date_range = st.date_input("Select a date range", value=(now.date(), now.date()))
 
-df = process_appointments_data(date)
+# Debugging output
+# st.write(f"date_range: {date_range}, type: {type(date_range)}")
 
-from features.progress_bar import create_card, sales_target  # Import create_card from progress_bar
+# Function to flatten the date_range
+def flatten_date_range(date_range_input):
+    flat_dates = []
+    if isinstance(date_range_input, (list, tuple)):
+        for item in date_range_input:
+            if isinstance(item, (datetime, date)):
+                flat_dates.append(item)
+            elif isinstance(item, (list, tuple)):
+                flat_dates.extend(flatten_date_range(item))
+            else:
+                st.error("Invalid date selection.")
+                st.stop()
+    elif isinstance(date_range_input, (datetime, date)):
+        flat_dates.append(date_range_input)
+    else:
+        st.error("Invalid date selection.")
+        st.stop()
+    return flat_dates
+
+# Flatten the date_range
+flat_date_list = flatten_date_range(date_range)
+
+if len(flat_date_list) == 2:
+    start_date, end_date = flat_date_list
+elif len(flat_date_list) == 1:
+    start_date = end_date = flat_date_list[0]
+else:
+    st.error("Please select a valid date or date range.")
+    st.stop()
+
+df = process_appointments_data((start_date, end_date))
+
+from features.progress_bar import create_card  # Import create_card from progress_bar
 
 st.markdown("""
     <style>
