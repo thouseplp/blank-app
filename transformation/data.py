@@ -121,24 +121,52 @@ def process_appointments_data(selected_date):
     return df_groupby
 
 st.components.v1.html(f"""
-<div style="background-color: #393B41; padding: 20px; border-radius: 20px; width: 100%; box-sizing: border-box; color: white; font-family: Arial, Helvetica, sans-serif;">
-    <!-- Expander starts here -->
-    <details style="width: 95%; margin-bottom: 10px;">
-        <summary style="display: flex; justify-content: space-between; align-items: center; font-weight: bold; font-size: 18px; cursor: pointer; list-style: none; outline: none;">
-            <div style="display: flex; align-items: center;">
-                <img src="https://res.cloudinary.com/dwuzrptk6/image/upload/v1730863714/bend_dvre85.png" style="width: 40px; height: 40px; margin-right: 10px;">
-                Bend
-                <span style="font-size: 14px; color: #6E7076; margin-left: 5px;">&#9660;</span> <!-- Downward arrow caret -->
-            </div>
-            <div style="text-align: right; color: #2C966C;">50% 📈</div>
-        </summary>
-        <!-- Additional content inside the expander -->
-        <div style="margin-top: 10px; color: white; font-size: 14px;">
-            <!-- Add your additional information here -->
-            <p>This is additional information inside the expander. You can include any content here, such as more details, explanations, or data.</p>
+<div style="background-color: #393B41; padding: 20px; border-radius: 20px; width: 100%; box-sizing: border-box; color: white; font-family: Arial, Helvetica, sans-serif; position: relative;">
+    <!-- Include custom styles for the tooltip -->
+    <style>
+        .tooltip {{
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+            margin-left: 5px;
+        }}
+        .tooltip .tooltiptext {{
+            visibility: hidden;
+            width: 220px;
+            background-color: #484A4F;
+            color: #fff;
+            text-align: left;
+            border-radius: 6px;
+            padding: 10px;
+            position: absolute;
+            z-index: 1000;
+            top: 100%; /* Position the tooltip below the icon */
+            right: 0%;
+            margin-top: 10px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }}
+        .tooltip:hover .tooltiptext {{
+            visibility: visible;
+            opacity: 1;
+        }}
+    </style>
+    <!-- Header starts here -->
+    <div style="width: 95%; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; position: relative;">
+        <div style="display: flex; align-items: center;">
+            <img src="https://res.cloudinary.com/dwuzrptk6/image/upload/v1730863714/bend_dvre85.png" style="width: 40px; height: 40px; margin-right: 10px;">
+            <span style="font-weight: bold; font-size: 18px;">Bend</span>
         </div>
-    </details>
-    <!-- Expander ends here -->
+        <!-- Tooltip with info icon on the right -->
+        <div class="tooltip" style="color: #6E7076;">
+            <span style="font-size: 14px; cursor: pointer;">&#9432;</span> <!-- Unicode for info symbol -->
+            <div class="tooltiptext" style="font-size: 14px;">
+                <p>% through month: 45%</p>
+                <p>% to minimum: <span style="color: #2C966C;">50% 🔼</span></p>
+                <p>% to stretch: <span style="color: #BB3C3E;">40% 🔻</span></p>
+            </div>
+        </div>
+    </div>
     <!-- "6 on pace to 14" line -->
     <div style="width: 95%; text-align: left; margin-bottom: 8px; font-size: 18px; font-weight: bold;">
         6<span style="font-size: 14px; font-weight: normal; color: #6E7076;"> on pace to 14</span>
@@ -151,7 +179,7 @@ st.components.v1.html(f"""
         <div style="background: #303135; width: 32%;"></div>
         <div style="background: #303135; width: 28%;"></div>
         <!-- Vertical line at the 12 mark -->
-        <div style="position: absolute; left: 72%; top: 0; height: 100%; width: 2px; background-color: #FFFFFF;"></div>
+        <div style="position: absolute; left: 72%; top: 0; height: 100%; width: 2px; background-color: #2C966C;"></div>
     </div>
     <!-- Numbers below the chart -->
     <div style="width: 95%; display: flex; justify-content: space-between; margin-top: 8px; font-weight: bold; font-size: 14px;">
@@ -160,4 +188,4 @@ st.components.v1.html(f"""
         <div style="width: 28%; text-align: right;">15</div>
     </div>
 </div>
-""", height=250)
+""", height=300)

@@ -48,7 +48,7 @@ date = st.date_input("Select a date", value=now.date())
 
 df = process_appointments_data(date)
 
-from features.progress_bar import create_card  # Import create_card from progress_bar
+from features.progress_bar import create_card, sales_target  # Import create_card from progress_bar
 
 st.markdown("""
     <style>
