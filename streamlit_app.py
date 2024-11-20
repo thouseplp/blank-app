@@ -124,6 +124,19 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
+# Calculate total goals and actuals
+total_goals = df['GOALS'].sum()
+total_actual = df['ID'].sum()
+
+with st.container():
+    create_card(
+        area='All Areas',
+        goal=total_goals,
+        actual=total_actual,
+        profile_image='https://res.cloudinary.com/dwuzrptk6/image/upload/v1732061718/Group_1147_ad1zmf.png',
+        name='Purelight'
+    )
+
 columns = st.columns(3)
 for idx, row in df.iterrows():
     with columns[idx % 3]:
