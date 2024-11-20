@@ -69,12 +69,16 @@ def process_appointments_data(selected_date_range):
         'Cincinnati': 'https://res.cloudinary.com/dwuzrptk6/image/upload/v1730863715/cincinnati_placeholder.png',  # Assuming a placeholder
         'Helena': 'https://res.cloudinary.com/dwuzrptk6/image/upload/v1730863713/helena_b0lpfy.png',
         'Cedar Rapids': 'https://res.cloudinary.com/dwuzrptk6/image/upload/v1730865480/Group_1128_bckfag.png',
-        'Missoula': 'https://res.cloudinary.com/dwuzrptk6/image/upload/v1730863715/missoula_lmfros.png',  # Corrected spelling
+        'Missoula': 'https://res.cloudinary.com/dwuzrptk6/image/upload/v1730863715/missoulda_lmfros.png',  # Corrected spelling
         'Puget Sound': 'https://res.cloudinary.com/dwuzrptk6/image/upload/v1730863716/puget_sound_placeholder.png',  # Assuming a placeholder
         'Spokane': 'https://res.cloudinary.com/dwuzrptk6/image/upload/v1730863715/spokane_i8tixp.png',
         'Bend': 'https://res.cloudinary.com/dwuzrptk6/image/upload/v1730863714/bend_dvre85.png',
         'Billings': 'https://res.cloudinary.com/dwuzrptk6/image/upload/v1730863716/billings_hezzk6.png',
-        'Utah': 'https://res.cloudinary.com/dwuzrptk6/image/upload/v1730863716/utah_placeholder.png'  # Assuming a placeholder
+        'Utah': 'https://res.cloudinary.com/dwuzrptk6/image/upload/v1730863716/utah_placeholder.png',
+        'Cincinnati': 'https://res.cloudinary.com/dwuzrptk6/image/upload/v1730865202/Group_1127_zhbvez.png',
+        'Portland North': 'https://res.cloudinary.com/dwuzrptk6/image/upload/v1730865202/Group_1127_zhbvez.png',
+        'Puget Sound': 'https://res.cloudinary.com/dwuzrptk6/image/upload/v1730865202/Group_1127_zhbvez.png',
+        'Utah': 'https://res.cloudinary.com/dwuzrptk6/image/upload/v1730865202/Group_1127_zhbvez.png'  # Assuming a placeholder
     }
 
     # Default profile picture URL
@@ -122,6 +126,7 @@ def process_appointments_data(selected_date_range):
 
     # Fill NaNs in 'GOALS' column with 0 before casting to int
     df_groupby['GOALS'] = df_groupby['GOALS'].fillna(0).astype(int)
+    df_groupby['PROFILE_PICTURE'].replace('', np.nan, inplace=True)
     df_groupby['PROFILE_PICTURE'] = df_groupby['PROFILE_PICTURE'].fillna(default_profile_picture)
     df_groupby['ID'] = pd.to_numeric(df_groupby['ID'], errors='coerce').fillna(0).astype(int)
 
