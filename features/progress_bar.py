@@ -61,7 +61,7 @@ def sales_target(actual, pace, minimum_target, maximum_target, image, area):
 
     # Generate the HTML code
     html_code = f"""
-    <div style="background-color: #393B41; padding: 20px; width: 100%;border-radius: 20px; box-sizing: border-box; color: white; font-family: Arial, Helvetica, sans-serif; position: relative;">
+    <div style="background-color: #41434A; padding: 20px; width: 100%;border-radius: 20px; box-sizing: border-box; color: white; font-family: Arial, Helvetica, sans-serif; position: relative;">
         <!-- Include custom styles for the tooltip -->
         <style>
             .tooltip {{

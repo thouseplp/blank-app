@@ -30,8 +30,13 @@ local_tz = pytz.timezone('America/Los_Angeles')  # Replace with your time zone
 # Get the current date and time in your local time zone
 now = datetime.now(local_tz)
 
-# Allow selecting a date range
-date_range = st.date_input("Select a date range", value=(now.date(), now.date()))
+st.sidebar.header("Select Date")
+
+# Allow selecting a date range in the sidebar
+date_range = st.sidebar.date_input(
+    "",
+    value=(now.date(), now.date())
+)
 
 # Debugging output
 # st.write(f"date_range: {date_range}, type: {type(date_range)}")
