@@ -12,7 +12,7 @@ st.set_page_config(
     layout="wide"
 )
 
-st.logo("https://i.ibb.co/5R9N3Bs/DAILY-SET-GOALS.png", size="large")
+st.logo("https://res.cloudinary.com/dwuzrptk6/image/upload/v1732139306/d97489eb-0834-40e3-a5b5-e93c2f0066b3_1-removebg-preview_1_z60jh6.png", size="large")
 
 hide_streamlit_style = """
     <style>

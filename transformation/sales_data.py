@@ -43,7 +43,7 @@ profile_pictures = {
 
 @st.cache_data(show_spinner=False, ttl=600)
 def get_sales(month, year):
-    sales_query = f"""
+    sales_query = """
         SELECT 
             sale_date,
             id,
@@ -52,13 +52,11 @@ def get_sales(month, year):
             RIGHT(LAST_DAY(CURRENT_DATE()),2) as days_in_month,
             1 - ROUND(DAYOFMONTH(CURRENT_DATE()) / RIGHT(LAST_DAY(CURRENT_DATE()),2),2) as percent_of_month_left,
             SUM(CASE WHEN sale_date >= DATEADD("day", -30, CURRENT_DATE()) THEN 1 ELSE 0 END) OVER(PARTITION BY area) as last_30_day_sales,
-            SUM(CASE WHEN YEAR(sale_date) = {year} AND MONTH(sale_date) = {month} THEN 1 ELSE 0 END) OVER(PARTITION BY area) as current_month_sales,
+            SUM(CASE WHEN YEAR(sale_date) = YEAR(CURRENT_DATE()) AND MONTH(sale_date) = MONTH(CURRENT_DATE()) THEN 1 ELSE 0 END) OVER(PARTITION BY area) as current_month_sales,
             FLOOR((last_30_day_sales * percent_of_month_left) + current_month_sales) as pace
         FROM 
             analytics.reporting.tbl_master_opportunities
-        WHERE 
-            YEAR(sale_date) = {year}
-            AND MONTH(sale_date) = {month}
+        WHERE sale_date >= DATEADD("month", -6, CURRENT_DATE())
             AND grand_total > 0
             AND area IN (
                 'Salem', 
