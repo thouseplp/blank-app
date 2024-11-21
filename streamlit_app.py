@@ -5,7 +5,7 @@ from datetime import datetime, date
 import pytz
 from snowflake.snowpark import Session
 from snowflake.snowpark.functions import col
-from transformation.data import process_appointments_data  # Import the function
+from transformation.appointments_data import process_appointments_data  # Import the function
 
 st.set_page_config(
     page_title="Daily Set Goals",
@@ -16,7 +16,11 @@ st.logo("https://i.ibb.co/5R9N3Bs/DAILY-SET-GOALS.png", size="large")
 
 hide_streamlit_style = """
     <style>
-    /* ... (same CSS as before) */
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    header {visibility: hidden;}
+    .css-10trblm {padding-top: 0px; padding-bottom: 0px;}
+    .css-1d391kg {padding-top: 0px !important;}
     </style>
 """
 st.markdown(hide_streamlit_style, unsafe_allow_html=True)

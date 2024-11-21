@@ -30,8 +30,8 @@ def sales_target(actual, pace, minimum_target, maximum_target, image, area):
     day_of_month = today.day
 
     percent_through_month = (day_of_month / total_days_in_month) * 100
-    percent_to_minimum = (actual / minimum_target) * 100
-    percent_to_maximum = (actual / maximum_target) * 100
+    percent_to_minimum = (actual / minimum_target) * 100 if minimum_target > 0 else 100
+    percent_to_maximum = (actual / maximum_target) * 100 if maximum_target > 0 else 100
 
     # Determine colors and arrows based on comparison with % through month
     if percent_to_minimum >= percent_through_month:
@@ -51,16 +51,17 @@ def sales_target(actual, pace, minimum_target, maximum_target, image, area):
         max_arrow = "🔻"
 
     # Progress bar calculations
-    progress_percentage = min((actual / maximum_target) * 100, 100)
-    if progress_percentage < 0:
-        progress_percentage = 0
+    progress_percentage = (actual / maximum_target) * 100 if maximum_target > 0 else 0
+    progress_percentage = min(progress_percentage, 100)  # Cap at 100%
 
     # Position of the vertical line (minimum target marker)
-    vertical_line_position = (minimum_target / maximum_target) * 100
+    vertical_line_position = (minimum_target / maximum_target) * 100 if maximum_target > 0 else 0
+    vertical_line_position = min(vertical_line_position, 100)
+
 
     # Generate the HTML code
     html_code = f"""
-    <div style="background-color: #393B41; padding: 20px; border-radius: 20px; width: 100%; box-sizing: border-box; color: white; font-family: Arial, Helvetica, sans-serif; position: relative;">
+    <div style="background-color: #393B41; padding: 20px; width: 100%;border-radius: 20px; box-sizing: border-box; color: white; font-family: Arial, Helvetica, sans-serif; position: relative;">
         <!-- Include custom styles for the tooltip -->
         <style>
             .tooltip {{
@@ -133,4 +134,4 @@ def sales_target(actual, pace, minimum_target, maximum_target, image, area):
     </div>
     """
 
-    st.components.v1.html(html_code, height=300)
+    st.html(html_code)
