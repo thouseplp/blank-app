@@ -41,7 +41,6 @@ profile_pictures = {
     'Utah': 'https://res.cloudinary.com/dwuzrptk6/image/upload/v1730865202/Group_1127_zhbvez.png'  # Updated to single entry
 }
 
-@st.cache_data(show_spinner=False, ttl=600)
 def get_sales(month, year):
     sales_query = """
         SELECT 

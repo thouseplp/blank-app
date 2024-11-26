@@ -53,8 +53,12 @@ year = st.sidebar.selectbox(
     index=5  # Default to current year (assuming the list starts 5 years ago)
 )
 
+@st.cache_data(show_spinner=False, ttl=600)
+def get_sales_data(month, year):
+    return process_sales_data(month, year)
+
 # Process sales data based on selected month and year
-df = process_sales_data(month, year)
+df = get_sales_data(month, year)
 
 # Create columns to display sales targets
 num_columns = 3  # Adjust as needed

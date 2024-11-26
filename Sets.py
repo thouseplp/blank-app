@@ -71,7 +71,12 @@ else:
     st.error("Please select a valid date or date range.")
     st.stop()
 
-df = process_appointments_data((start_date, end_date))
+@st.cache_data(show_spinner=False, ttl=600)
+def get_appointments_data(start_date, end_date):
+    return process_appointments_data((start_date, end_date))
+
+# Fetch the data
+df = get_appointments_data(start_date, end_date)
 
 from features.progress_bar import create_card  # Import create_card from progress_bar
 
