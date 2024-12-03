@@ -65,7 +65,7 @@ def process_appointments_data(selected_date_range):
         'Minneapolis': 10,
         'Portland': 15,
         'Pasco': 10,
-        'Medford': 10,
+        'Medford': 6,
         'Bozeman': 10,
         'Cincinnati': 15,
         'Helena': 5,
