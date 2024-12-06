@@ -126,13 +126,12 @@ def process_sales_data(month, year):
     # Create a date range for the selected month
     date_range = pd.date_range(start=start_date, end=end_date)
     
-    # Create goals_df to include each date in the date_range, with goals set to 0 on weekends
+    # Create goals_df without weekend/weekday logic
     goals_df_list = []
     for area, goals_values in goals.items():
         for date in date_range:
-            weekday = date.weekday()
-            min_goal = goals_values['min_goal'] if weekday < 5 else 0
-            max_goal = goals_values['max_goal'] if weekday < 5 else 0
+            min_goal = goals_values['min_goal']
+            max_goal = goals_values['max_goal']
             goals_df_list.append({
                 'AREA': area,
                 'MIN_GOALS': min_goal,
