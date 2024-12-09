@@ -38,7 +38,7 @@ profile_pictures = {
     'Spokane': 'https://res.cloudinary.com/dwuzrptk6/image/upload/v1730863715/spokane_i8tixp.png',
     'Bend': 'https://res.cloudinary.com/dwuzrptk6/image/upload/v1730863714/bend_dvre85.png',
     'Billings': 'https://res.cloudinary.com/dwuzrptk6/image/upload/v1730863716/billings_hezzk6.png',
-    'Utah': 'https://res.cloudinary.com/dwuzrptk6/image/upload/v1730865202/Group_1127_zhbvez.png'  # Updated to single entry
+    'Utah': 'https://res.cloudinary.com/dwuzrptk6/image/upload/v1733780794/Group_1168_htnlaz.png'  # Updated to single entry
 }
 
 def get_sales(month, year):
