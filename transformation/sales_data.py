@@ -30,11 +30,11 @@ profile_pictures = {
     'Pasco': 'https://res.cloudinary.com/dwuzrptk6/image/upload/v1730863718/pasco_fxdzsg.png',
     'Medford': 'https://res.cloudinary.com/dwuzrptk6/image/upload/v1730863720/medford_ks5ol1.png',
     'Bozeman': 'https://res.cloudinary.com/dwuzrptk6/image/upload/v1730863714/bozeman_z1dcyw.png',
-    'Cincinnati': 'https://res.cloudinary.com/dwuzrptk6/image/upload/v1730865202/Group_1127_zhbvez.png',  # Updated to single entry
+    'Cincinnati': 'https://res.cloudinary.com/dwuzrptk6/image/upload/v1733779348/Cincinnati_2-Photoroom_rxg5dz.png',  # Updated to single entry
     'Helena': 'https://res.cloudinary.com/dwuzrptk6/image/upload/v1730863713/helena_b0lpfy.png',
     'Cedar Rapids': 'https://res.cloudinary.com/dwuzrptk6/image/upload/v1730865480/Group_1128_bckfag.png',
     'Missoula': 'https://res.cloudinary.com/dwuzrptk6/image/upload/v1730863715/missoulda_lmfros.png',
-    'Puget Sound': 'https://res.cloudinary.com/dwuzrptk6/image/upload/v1730865202/Group_1127_zhbvez.png',  # Updated to single entry
+    'Puget Sound': 'https://res.cloudinary.com/dwuzrptk6/image/upload/v1733779404/PugetSound-Photoroom_wmj5k7.png',  # Updated to single entry
     'Spokane': 'https://res.cloudinary.com/dwuzrptk6/image/upload/v1730863715/spokane_i8tixp.png',
     'Bend': 'https://res.cloudinary.com/dwuzrptk6/image/upload/v1730863714/bend_dvre85.png',
     'Billings': 'https://res.cloudinary.com/dwuzrptk6/image/upload/v1730863716/billings_hezzk6.png',
@@ -102,15 +102,15 @@ def process_sales_data(month, year):
         'Pasco': {'min_goal': 35, 'max_goal': 42},
         'Medford': {'min_goal': 40, 'max_goal': 48},
         'Bozeman': {'min_goal': 20, 'max_goal': 24},
-        'Cincinnati': {'min_goal': 0, 'max_goal': 0},
+        'Cincinnati': {'min_goal': 24, 'max_goal': 29},
         'Helena': {'min_goal': 25, 'max_goal': 30},
         'Cedar Rapids': {'min_goal': 20, 'max_goal': 24},
-        'Missoula': {'min_goal': 0, 'max_goal': 0},
+        'Missoula': {'min_goal': 30, 'max_goal': 36},
         'Puget Sound': {'min_goal': 20, 'max_goal': 24},
         'Spokane': {'min_goal': 15, 'max_goal': 18},
         'Bend': {'min_goal': 15, 'max_goal': 18},
         'Billings': {'min_goal': 10, 'max_goal': 12},
-        'Utah': {'min_goal': 0, 'max_goal': 0}
+        'Utah': {'min_goal': 10, 'max_goal': 12}
     }
 
     # Default profile picture URL
