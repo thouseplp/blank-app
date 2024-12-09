@@ -71,7 +71,7 @@ def process_appointments_data(selected_date_range):
         'Helena': 5,
         'Cedar Rapids': 10,
         'Missoula': 10,
-        'Puget Sound': 10,
+        'Puget Sound': 18,
         'Spokane': 10,
         'Bend': 5,
         'Billings': 5,

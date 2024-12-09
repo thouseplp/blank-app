@@ -95,7 +95,7 @@ def process_sales_data(month, year):
     # Goals mapping
     goals = {
         'Salem': {'min_goal': 80, 'max_goal': 96},
-        'Portland North': {'min_goal': 60, 'max_goal': 72},
+        'Portland North': {'min_goal': 65, 'max_goal': 78},
         'Des Moines': {'min_goal': 55, 'max_goal': 66},
         'Minneapolis': {'min_goal': 0, 'max_goal': 0},
         'Portland': {'min_goal': 40, 'max_goal': 48},
@@ -106,7 +106,7 @@ def process_sales_data(month, year):
         'Helena': {'min_goal': 25, 'max_goal': 30},
         'Cedar Rapids': {'min_goal': 20, 'max_goal': 24},
         'Missoula': {'min_goal': 0, 'max_goal': 0},
-        'Puget Sound': {'min_goal': 15, 'max_goal': 18},
+        'Puget Sound': {'min_goal': 20, 'max_goal': 24},
         'Spokane': {'min_goal': 15, 'max_goal': 18},
         'Bend': {'min_goal': 15, 'max_goal': 18},
         'Billings': {'min_goal': 10, 'max_goal': 12},
