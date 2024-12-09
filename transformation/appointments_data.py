@@ -37,7 +37,7 @@ profile_pictures = {
     'Spokane': 'https://res.cloudinary.com/dwuzrptk6/image/upload/v1730863715/spokane_i8tixp.png',
     'Bend': 'https://res.cloudinary.com/dwuzrptk6/image/upload/v1730863714/bend_dvre85.png',
     'Billings': 'https://res.cloudinary.com/dwuzrptk6/image/upload/v1730863716/billings_hezzk6.png',
-    'Utah': 'https://res.cloudinary.com/dwuzrptk6/image/upload/v1733780794/Group_1168_htnlaz.png'  # Updated to single entry
+    'Utah': 'https://res.cloudinary.com/dwuzrptk6/image/upload/v1733781577/Group_1168_htnlaz.png'  # Updated to single entry
 }
 
 def get_appointments():
