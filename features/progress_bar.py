@@ -135,3 +135,28 @@ def sales_target(actual, pace, minimum_target, maximum_target, image, area):
     """
 
     st.html(html_code)
+
+def gold_standard(goal, actual, profile_image, name):
+    # Calculate the percentage to goal, handling division by zero
+    percentage_to_goal = min((actual / goal) * 100 if goal != 0 else 100, 100)
+    # Set the progress bar color based on the percentage
+    progress_color = "#C34547" if percentage_to_goal < 100 else "#E1AB3D"
+    
+    # If it's over (or equal to) the goal, add the emoji and a drop shadow
+    if actual >= goal:
+        name = f"{name} ⭐"
+        # Instead of setting a text-shadow on the name, we apply a box-shadow to the card.
+
+    st.markdown(f"""
+    <div class="card">
+        <div class="profile-section">
+            <img src="{profile_image}" class="profile-pic" alt="Profile Picture">
+            <div class="name">{name}</div>
+        </div>
+        <div class="appointments">{actual}</div>
+        <div class="progress-bar">
+            <div class="progress-bar-fill" style="width: {percentage_to_goal}%; background-color: {progress_color};"></div>
+            <div class="goal">{goal}</div>
+        </div>
+    </div>
+""", unsafe_allow_html=True)
