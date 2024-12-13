@@ -63,7 +63,7 @@ def process_appointments_data(selected_date_range):
         'Pasco': 10,
         'Medford': 6,
         'Bozeman': 10,
-        'Cincinnati': 15,
+        'Cincinnati': 8,
         'Helena': 5,
         'Cedar Rapids': 10,
         'Missoula': 10,
