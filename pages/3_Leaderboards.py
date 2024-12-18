@@ -2,6 +2,24 @@ import streamlit as st
 import datetime
 from transformation.leaderboard import leaderboard_query, fm_leaderboard_query
 
+# Set up Streamlit page configuration
+st.set_page_config(
+    page_title="Leaderboards",
+    layout="wide"
+)
+
+# Hide Streamlit's default menu, footer, and header
+hide_streamlit_style = """
+    <style>
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    header {visibility: hidden;}
+    .css-10trblm {padding-top: 0px; padding-bottom: 0px;}
+    .css-1d391kg {padding-top: 0px !important;}
+    </style>
+"""
+st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+
 df = leaderboard_query()
 
 fm_df = fm_leaderboard_query()
