@@ -43,7 +43,7 @@ elif dimension == 'Area':
 tab1, tab2 = st.tabs(["Energy Consultant", "Field Marketer"])
 
 with tab1:
-    st.data_editor(grouped_df, hide_index=True, disabled=True, use_container_width=True)
+    st.data_editor(grouped_df, hide_index=True, height=1000, disabled=True, use_container_width=True)
 
 fm_df_filtered = fm_df[(fm_df["Date"] >= start_date) & (fm_df["Date"] <= end_date)]
 
