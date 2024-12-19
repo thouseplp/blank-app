@@ -33,6 +33,7 @@ def fm_leaderboard_query():
     fm_leaderboard_query = """
         SELECT date "Date", lead_generator "FM", area "Area", fm_picture_link "FM Picture Link", area_picture_link "Area Picture Link", COUNT(DISTINCT CASE WHEN metric = 'Sales' THEN id END) "Assists", COUNT(DISTINCT CASE WHEN metric = 'Sits' THEN id END) "Sits", COUNT(DISTINCT CASE WHEN metric = 'Sets' THEN id END) "Sets"
 FROM analytics.team_reporting.dtbl_sales_leaderboard
+WHERE lead_generator IS NOT NULL
 GROUP BY ALL
 ORDER BY "Assists"
     """
