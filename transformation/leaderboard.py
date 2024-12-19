@@ -23,7 +23,7 @@ session = create_snowflake_session()
 
 def leaderboard_query():
     leaderboard_query = """
-        SELECT date "Date", closer "Closer", area "Area", COUNT(DISTINCT CASE WHEN metric = 'Sales' THEN id END) "Sales", COUNT(DISTINCT CASE WHEN metric = 'Sits' THEN id END) "Sits", COUNT(DISTINCT CASE WHEN metric = 'Opportunities' THEN id END) "Opps"
+        SELECT date "Date", closer "Closer", closer_picture_link "Closer Picture Link", area "Area", area_picture_link "Area Picture Link",COUNT(DISTINCT CASE WHEN metric = 'Sales' THEN id END) "Sales", COUNT(DISTINCT CASE WHEN metric = 'Sits' THEN id END) "Sits", COUNT(DISTINCT CASE WHEN metric = 'Opportunities' THEN id END) "Opps"
 FROM analytics.team_reporting.dtbl_sales_leaderboard
 GROUP BY ALL
     """
@@ -31,7 +31,7 @@ GROUP BY ALL
 
 def fm_leaderboard_query():
     fm_leaderboard_query = """
-        SELECT date "Date", lead_generator "FM", area "Area", COUNT(DISTINCT CASE WHEN metric = 'Sales' THEN id END) "Assists", COUNT(DISTINCT CASE WHEN metric = 'Sits' THEN id END) "Sits", COUNT(DISTINCT CASE WHEN metric = 'Sets' THEN id END) "Sets"
+        SELECT date "Date", lead_generator "FM", area "Area", fm_picture_link "FM Picture Link", area_picture_link "Area Picture Link", COUNT(DISTINCT CASE WHEN metric = 'Sales' THEN id END) "Assists", COUNT(DISTINCT CASE WHEN metric = 'Sits' THEN id END) "Sits", COUNT(DISTINCT CASE WHEN metric = 'Sets' THEN id END) "Sets"
 FROM analytics.team_reporting.dtbl_sales_leaderboard
 GROUP BY ALL
 ORDER BY "Assists"

@@ -54,14 +54,28 @@ if area:
     df_filtered = df_filtered[df_filtered["Area"].isin(area)]
 
 if dimension == 'Rep':
-    grouped_df = df_filtered.groupby("Closer", as_index=False)[['Sales', 'Sits', 'Opps']].sum().sort_values('Sales', ascending=False)
+    grouped_df = df_filtered.groupby(["Closer","Closer Picture Link"], as_index=False)[['Sales', 'Sits', 'Opps']].sum().sort_values('Sales', ascending=False)
 elif dimension == 'Area':
-    grouped_df = df_filtered.groupby("Area", as_index=False)[['Sales', 'Sits', 'Opps']].sum().sort_values('Sales', ascending=False)
+    grouped_df = df_filtered.groupby(["Area", "Area Picture Link"], as_index=False)[['Sales', 'Sits', 'Opps']].sum().sort_values('Sales', ascending=False)
 
 tab1, tab2 = st.tabs(["Energy Consultant", "Field Marketer"])
 
 with tab1:
-    st.data_editor(grouped_df, hide_index=True, height=1000, disabled=True, use_container_width=True)
+    # Dynamically determine the picture column based on the dimension
+    picture_column = "Closer Picture Link" if dimension == 'Rep' else "Area Picture Link"
+
+    column_order = [picture_column, "Closer" if dimension == 'Rep' else "Area", "Sales", "Sits", "Opps"]
+
+    # Display the data_editor with the appropriate image column
+    st.data_editor(
+        grouped_df,
+        column_config={picture_column: st.column_config.ImageColumn("")},
+        column_order=column_order,
+        hide_index=True,
+        height=1000,
+        disabled=True,
+        use_container_width=True,
+    )
 
 fm_df_filtered = fm_df[(fm_df["Date"] >= start_date) & (fm_df["Date"] <= end_date)]
 
@@ -69,9 +83,27 @@ if area:
     fm_df_filtered = fm_df_filtered[fm_df_filtered["Area"].isin(area)]
 
 if dimension == 'Rep':
-    fm_grouped_df = fm_df_filtered.groupby("FM", as_index=False)[['Assists', 'Sits', 'Sets']].sum().sort_values('Assists', ascending=False)
+    fm_grouped_df = fm_df_filtered.groupby(["FM", "FM Picture Link"], as_index=False)[['Assists', 'Sits', 'Sets']].sum().sort_values('Assists', ascending=False)
 elif dimension == 'Area':
-    fm_grouped_df = fm_df_filtered.groupby("Area", as_index=False)[['Assists', 'Sits', 'Sets']].sum().sort_values('Assists', ascending=False)
+    fm_grouped_df = fm_df_filtered.groupby(["Area", "Area Picture Link"], as_index=False)[['Assists', 'Sits', 'Sets']].sum().sort_values('Assists', ascending=False)
 
 with tab2:
-    st.data_editor(fm_grouped_df, hide_index=True, height=1000, disabled=True, use_container_width=True)
+    # Dynamically determine the picture column based on the dimension
+    picture_column = "FM Picture Link" if dimension == 'Rep' else "Area Picture Link"
+
+    # Add the picture column to fm_grouped_df (if applicable in your data)
+    # Ensure your fm_df contains the corresponding picture link columns
+
+    # Define the column order
+    column_order = [picture_column, "FM" if dimension == 'Rep' else "Area", "Assists", "Sits", "Sets"]
+
+    # Display the data_editor with the appropriate image column
+    st.data_editor(
+        fm_grouped_df,
+        column_config={picture_column: st.column_config.ImageColumn("")},
+        column_order=column_order,
+        hide_index=True,
+        height=1000,
+        disabled=True,
+        use_container_width=True,
+    )
