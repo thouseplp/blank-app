@@ -25,6 +25,16 @@ df = leaderboard_query()
 
 fm_df = fm_leaderboard_query()
 
+df_cv = cv_query()
+
+df_cv = df_cv.groupby(by="Closer").agg({'CV': 'sum',
+                                    'Solar': 'sum',
+                                     'Batteries': 'sum',
+                                     'Roofs': 'sum',
+                                     'Bundled': 'sum'}).sort_values(by='CV', ascending= False).reset_index()
+
+df_cv['CV'] = df_cv['CV'].round(0)
+
 unique_areas = sorted(df["Area"].unique())
 
 today = datetime.date.today()
@@ -59,7 +69,7 @@ if dimension == 'Rep':
 elif dimension == 'Area':
     grouped_df = df_filtered.groupby(["Area", "Area Picture Link"], as_index=False)[['Sales', 'Sits', 'Opps']].sum().sort_values('Sales', ascending=False)
 
-tab1, tab2 = st.tabs(["Energy Consultant", "Field Marketer"])
+tab1, tab2, tab3 = st.tabs(["Energy Consultant", "Field Marketer", "Contract Value"])
 
 with tab1:
     # Dynamically determine the picture column based on the dimension
@@ -106,17 +116,8 @@ with tab2:
         use_container_width=True,
     )
 
-df_cv = cv_query()
-
-df_cv = df_cv.groupby(by="Closer").agg({'CV': 'sum',
-                                    'Solar': 'sum',
-                                     'Batteries': 'sum',
-                                     'Roofs': 'sum',
-                                     'Bundled': 'sum'}).sort_values(by='CV', ascending= False).reset_index()
-
-df_cv['CV'] = df_cv['CV'].round(0)
-
-st.data_editor(
+with tab3:
+    st.data_editor(
         df_cv,
         hide_index=True,
         disabled=True,
