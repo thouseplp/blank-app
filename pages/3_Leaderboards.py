@@ -1,6 +1,7 @@
 import streamlit as st
 import datetime
 from transformation.leaderboard import leaderboard_query, fm_leaderboard_query
+from transformation.contract_value_leaderboard import cv_query
 
 # Set up Streamlit page configuration
 st.set_page_config(
@@ -91,9 +92,6 @@ with tab2:
     # Dynamically determine the picture column based on the dimension
     picture_column = "FM Picture Link" if dimension == 'Rep' else "Area Picture Link"
 
-    # Add the picture column to fm_grouped_df (if applicable in your data)
-    # Ensure your fm_df contains the corresponding picture link columns
-
     # Define the column order
     column_order = [picture_column, "FM" if dimension == 'Rep' else "Area", "Assists", "Sits", "Sets"]
 
@@ -107,3 +105,20 @@ with tab2:
         disabled=True,
         use_container_width=True,
     )
+
+df_cv = cv_query()
+
+df_cv = df_cv.groupby(by="Closer").agg({'CV': 'sum',
+                                    'Solar': 'sum',
+                                     'Batteries': 'sum',
+                                     'Roofs': 'sum',
+                                     'Bundled': 'sum'}).sort_values(by='CV', ascending= False).reset_index()
+
+df_cv['CV'] = df_cv['CV'].round(0)
+
+st.data_editor(
+        df_cv,
+        hide_index=True,
+        disabled=True,
+        use_container_width=True,
+        height=1000)
