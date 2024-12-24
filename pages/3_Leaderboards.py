@@ -23,30 +23,27 @@ hide_streamlit_style = """
 """
 st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 
+###############################################################################
 # Pull data from queries
-df = leaderboard_query()         # Energy Consultant data
-fm_df = fm_leaderboard_query()   # Field Marketer data
-df_cv = cv_query()               # Contract Value data
+###############################################################################
+# 1) Energy Consultant data
+df = leaderboard_query()
 
-# Pre-aggregate the Contract Value dataframe
-df_cv = (
-    df_cv.groupby(by="Closer")
-         .agg({
-             'CV': 'sum',
-             'Solar': 'sum',
-             'Batteries': 'sum',
-             'Roofs': 'sum',
-             'Bundled': 'sum'
-          })
-         .sort_values(by='CV', ascending=False)
-         .reset_index()
-)
-df_cv['CV'] = df_cv['CV'].round(0)
+# 2) Field Marketer data
+fm_df = fm_leaderboard_query()
 
-# Get unique areas
-unique_areas = sorted(df["Area"].unique())
+# 3) Contract Value data
+df_cv = cv_query()  
+#   NOTE: We expect df_cv to have "Sale Date" as the date column and "Area" as well.
 
+###############################################################################
+# Get unique areas (you could also pull from df_cv if that's your main area source)
+###############################################################################
+unique_areas = sorted(df["Area"].unique())  
+
+###############################################################################
 # Calculate default date range (first of current month - last day of current month)
+###############################################################################
 today = datetime.date.today()
 if today.month == 12:
     next_month = datetime.date(today.year + 1, 1, 1)
@@ -55,14 +52,18 @@ else:
 end_of_month = next_month - datetime.timedelta(days=1)
 end_of_month_day = end_of_month.day
 
+###############################################################################
 # Sidebar-like controls
+###############################################################################
 cols1, cols2, cols3, cols4 = st.columns([1,1,1,1])
 
 with cols1:
     date_range = st.date_input(
-        "Date", 
-        (datetime.date(today.year, today.month, 1), 
-         datetime.date(today.year, today.month, end_of_month_day))
+        "Date",
+        (
+            datetime.date(today.year, today.month, 1),
+            datetime.date(today.year, today.month, end_of_month_day),
+        )
     )
     start_date, end_date = date_range
 
@@ -70,108 +71,187 @@ with cols2:
     area = st.multiselect("Area", unique_areas)
 
 with cols3:
-    dimension = st.selectbox("Dimension", ('Rep', 'Area'))
+    dimension = st.selectbox("Dimension", ("Rep", "Area"))
 
 with cols4:
-    role = st.selectbox("Role", ('Energy Consultant', 'Field Marketer'))   
+    role = st.selectbox("Role", ("Energy Consultant", "Field Marketer"))
 
-# Filter Energy Consultant data based on date and area
-df_filtered = df[(df["Date"] >= start_date) & (df["Date"] <= end_date)]
+###############################################################################
+# 1) Filter & group ENERGY CONSULTANT data
+###############################################################################
+df_filtered = df[
+    (df["Date"] >= start_date) & (df["Date"] <= end_date)
+]
 if area:
     df_filtered = df_filtered[df_filtered["Area"].isin(area)]
 
-# Group Energy Consultant data
-if dimension == 'Rep':
+# Group by dimension
+if dimension == "Rep":
     ec_grouped_df = (
         df_filtered
-        .groupby(["Closer","Closer Picture Link"], as_index=False)
-        [['Sales', 'Sits', 'Opps']].sum()
-        .sort_values('Sales', ascending=False)
+        .groupby(["Closer", "Closer Picture Link"], as_index=False)
+        [["Sales", "Sits", "Opps"]]
+        .sum()
+        .sort_values("Sales", ascending=False)
     )
-else:  # dimension == 'Area'
-    ec_grouped_df = (
-        df_filtered
-        .groupby(["Area","Area Picture Link"], as_index=False)
-        [['Sales', 'Sits', 'Opps']].sum()
-        .sort_values('Sales', ascending=False)
-    )
+    ec_picture_col = "Closer Picture Link"
+    ec_name_col = "Closer"
 
-# Filter Field Marketer data based on date and area
-fm_df_filtered = fm_df[(fm_df["Date"] >= start_date) & (fm_df["Date"] <= end_date)]
+else:  # dimension == "Area"
+    ec_grouped_df = (
+        df_filtered
+        .groupby(["Area", "Area Picture Link"], as_index=False)
+        [["Sales", "Sits", "Opps"]]
+        .sum()
+        .sort_values("Sales", ascending=False)
+    )
+    ec_picture_col = "Area Picture Link"
+    ec_name_col = "Area"
+
+###############################################################################
+# 2) Filter & group FIELD MARKETER data
+###############################################################################
+fm_df_filtered = fm_df[
+    (fm_df["Date"] >= start_date) & (fm_df["Date"] <= end_date)
+]
 if area:
     fm_df_filtered = fm_df_filtered[fm_df_filtered["Area"].isin(area)]
 
-# Group Field Marketer data
-if dimension == 'Rep':
+if dimension == "Rep":
     fm_grouped_df = (
         fm_df_filtered
         .groupby(["FM", "FM Picture Link"], as_index=False)
-        [['Assists', 'Sits', 'Sets']].sum()
-        .sort_values('Assists', ascending=False)
+        [["Assists", "Sits", "Sets"]]
+        .sum()
+        .sort_values("Assists", ascending=False)
     )
-else:  # dimension == 'Area'
+    fm_picture_col = "FM Picture Link"
+    fm_name_col = "FM"
+else:  # dimension == "Area"
     fm_grouped_df = (
         fm_df_filtered
         .groupby(["Area", "Area Picture Link"], as_index=False)
-        [['Assists', 'Sits', 'Sets']].sum()
-        .sort_values('Assists', ascending=False)
+        [["Assists", "Sits", "Sets"]]
+        .sum()
+        .sort_values("Assists", ascending=False)
     )
+    fm_picture_col = "Area Picture Link"
+    fm_name_col = "Area"
 
 ###############################################################################
-# Create two tabs: Activity (driven by 'role') and Contract Value
+# 3) Filter & group CONTRACT VALUE data
+###############################################################################
+# 3a) Filter by date range using "Sale Date"
+df_cv_filtered = df_cv[
+    (df_cv["Sale Date"] >= start_date) & (df_cv["Sale Date"] <= end_date)
+]
+
+# 3b) Filter by area if selected
+if area:
+    df_cv_filtered = df_cv_filtered[df_cv_filtered["Area"].isin(area)]
+
+# NOTE: We do NOT filter by role for CV — we only use `role` to figure out which 
+#       fields to group by if dimension == 'Rep'.
+
+# Decide how to group the CV data based on dimension and role
+if dimension == "Rep":
+    # If the user picks 'Energy Consultant', group by "Closer"
+    # If the user picks 'Field Marketer', group by "FM"
+    if role == "Energy Consultant":
+        cv_grouped_df = (
+            df_cv_filtered
+            .groupby(["Closer", "Closer Picture Link"], as_index=False)
+            [["CV", "Solar", "Batteries", "Roofs", "Bundled"]]
+            .sum()
+            .sort_values("CV", ascending=False)
+        )
+        cv_picture_col = "Closer Picture Link"
+        cv_name_col = "Closer"
+    else:  # role == "Field Marketer"
+        cv_grouped_df = (
+            df_cv_filtered
+            .groupby(["Field Marketer", "FM Picture Link"], as_index=False)
+            [["CV", "Solar", "Batteries", "Roofs", "Bundled"]]
+            .sum()
+            .sort_values("CV", ascending=False)
+        )
+        cv_picture_col = "FM Picture Link"
+        cv_name_col = "Field Marketer"
+
+else:  # dimension == "Area"
+    cv_grouped_df = (
+        df_cv_filtered
+        .groupby(["Area", "Area Picture Link"], as_index=False)
+        [["CV", "Solar", "Batteries", "Roofs", "Bundled"]]
+        .sum()
+        .sort_values("CV", ascending=False)
+    )
+    cv_picture_col = "Area Picture Link"
+    cv_name_col = "Area"
+
+# Round CV if desired
+cv_grouped_df["CV"] = cv_grouped_df["CV"].round(0)
+
+###############################################################################
+# Create two tabs: "Activity" (driven by 'role') and "Contract Value"
 ###############################################################################
 tab1, tab2 = st.tabs(["Activity", "Contract Value"])
 
+###############################################################################
+# TAB 1 (Activity)
+###############################################################################
 with tab1:
-    if role == 'Energy Consultant':
-        # Dynamically determine the picture column based on the dimension
-        picture_column = "Closer Picture Link" if dimension == 'Rep' else "Area Picture Link"
-
-        # Define column order for display
-        column_order = [
-            picture_column,
-            "Closer" if dimension == 'Rep' else "Area", 
-            "Sales", 
-            "Sits", 
-            "Opps"
-        ]
-
+    if role == "Energy Consultant":
+        # Display ENERGY CONSULTANT data_editor
         st.data_editor(
             ec_grouped_df,
-            column_config={picture_column: st.column_config.ImageColumn("")},
-            column_order=column_order,
+            column_config={ec_picture_col: st.column_config.ImageColumn("")},
+            column_order=[
+                ec_picture_col,
+                ec_name_col,
+                "Sales",
+                "Sits",
+                "Opps"
+            ],
             hide_index=True,
             height=1000,
             disabled=True,
             use_container_width=True,
         )
-
-    else:  # role == 'Field Marketer'
-        # Dynamically determine the picture column based on the dimension
-        picture_column = "FM Picture Link" if dimension == 'Rep' else "Area Picture Link"
-
-        # Define column order
-        column_order = [
-            picture_column, 
-            "FM" if dimension == 'Rep' else "Area", 
-            "Assists", 
-            "Sits", 
-            "Sets"
-        ]
-
+    else:
+        # Display FIELD MARKETER data_editor
         st.data_editor(
             fm_grouped_df,
-            column_config={picture_column: st.column_config.ImageColumn("")},
-            column_order=column_order,
+            column_config={fm_picture_col: st.column_config.ImageColumn("")},
+            column_order=[
+                fm_picture_col,
+                fm_name_col,
+                "Assists",
+                "Sits",
+                "Sets"
+            ],
             hide_index=True,
             height=1000,
             disabled=True,
             use_container_width=True,
         )
 
+###############################################################################
+# TAB 2 (Contract Value)
+###############################################################################
 with tab2:
     st.data_editor(
-        df_cv,
+        cv_grouped_df,
+        column_config={cv_picture_col: st.column_config.ImageColumn("")},
+        column_order=[
+            cv_picture_col,
+            cv_name_col,
+            "CV",
+            "Solar",
+            "Batteries",
+            "Roofs",
+            "Bundled"
+        ],
         hide_index=True,
         disabled=True,
         use_container_width=True,
