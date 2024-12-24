@@ -33,13 +33,17 @@ df = leaderboard_query()
 fm_df = fm_leaderboard_query()
 
 # 3) Contract Value data
-df_cv = cv_query()  
-#   NOTE: We expect df_cv to have "Sale Date" as the date column and "Area" as well.
+#    NOTE: We expect df_cv to have:
+#      - "Sale Date" as the date column
+#      - "Area"
+#      - "Closer" or "Field Marketer" (depending on role)
+#      - Possibly "Closer Picture Link" or "FM Picture Link" if you have images
+df_cv = cv_query()
 
 ###############################################################################
-# Get unique areas (you could also pull from df_cv if that's your main area source)
+# Get unique areas (you could also pull from df_cv if you prefer)
 ###############################################################################
-unique_areas = sorted(df["Area"].unique())  
+unique_areas = sorted(df["Area"].unique())
 
 ###############################################################################
 # Calculate default date range (first of current month - last day of current month)
@@ -55,7 +59,7 @@ end_of_month_day = end_of_month.day
 ###############################################################################
 # Sidebar-like controls
 ###############################################################################
-cols1, cols2, cols3, cols4 = st.columns([1,1,1,1])
+cols1, cols2, cols3, cols4 = st.columns([1, 1, 1, 1])
 
 with cols1:
     date_range = st.date_input(
@@ -77,11 +81,10 @@ with cols4:
     role = st.selectbox("Role", ("Energy Consultant", "Field Marketer"))
 
 ###############################################################################
-# 1) Filter & group ENERGY CONSULTANT data
+# 1) Filter & group ENERGY CONSULTANT data (df)
 ###############################################################################
-df_filtered = df[
-    (df["Date"] >= start_date) & (df["Date"] <= end_date)
-]
+df_filtered = df[(df["Date"] >= start_date) & (df["Date"] <= end_date)]
+
 if area:
     df_filtered = df_filtered[df_filtered["Area"].isin(area)]
 
@@ -96,7 +99,6 @@ if dimension == "Rep":
     )
     ec_picture_col = "Closer Picture Link"
     ec_name_col = "Closer"
-
 else:  # dimension == "Area"
     ec_grouped_df = (
         df_filtered
@@ -109,11 +111,10 @@ else:  # dimension == "Area"
     ec_name_col = "Area"
 
 ###############################################################################
-# 2) Filter & group FIELD MARKETER data
+# 2) Filter & group FIELD MARKETER data (fm_df)
 ###############################################################################
-fm_df_filtered = fm_df[
-    (fm_df["Date"] >= start_date) & (fm_df["Date"] <= end_date)
-]
+fm_df_filtered = fm_df[(fm_df["Date"] >= start_date) & (fm_df["Date"] <= end_date)]
+
 if area:
     fm_df_filtered = fm_df_filtered[fm_df_filtered["Area"].isin(area)]
 
@@ -139,7 +140,7 @@ else:  # dimension == "Area"
     fm_name_col = "Area"
 
 ###############################################################################
-# 3) Filter & group CONTRACT VALUE data
+# 3) Filter & group CONTRACT VALUE data (df_cv)
 ###############################################################################
 # 3a) Filter by date range using "Sale Date"
 df_cv_filtered = df_cv[
@@ -150,13 +151,10 @@ df_cv_filtered = df_cv[
 if area:
     df_cv_filtered = df_cv_filtered[df_cv_filtered["Area"].isin(area)]
 
-# NOTE: We do NOT filter by role for CV — we only use `role` to figure out which 
-#       fields to group by if dimension == 'Rep'.
-
-# Decide how to group the CV data based on dimension and role
+# 3c) Decide how to group the CV data based on dimension and role
 if dimension == "Rep":
     # If the user picks 'Energy Consultant', group by "Closer"
-    # If the user picks 'Field Marketer', group by "FM"
+    # If the user picks 'Field Marketer', group by "Field Marketer"
     if role == "Energy Consultant":
         cv_grouped_df = (
             df_cv_filtered
@@ -179,14 +177,16 @@ if dimension == "Rep":
         cv_name_col = "Field Marketer"
 
 else:  # dimension == "Area"
+    # NOTE: If your df_cv does NOT have "Area Picture Link", remove it from groupby
+    #       We'll remove it here to avoid KeyErrors.
     cv_grouped_df = (
         df_cv_filtered
-        .groupby(["Area", "Area Picture Link"], as_index=False)
+        .groupby("Area", as_index=False)
         [["CV", "Solar", "Batteries", "Roofs", "Bundled"]]
         .sum()
         .sort_values("CV", ascending=False)
     )
-    cv_picture_col = "Area Picture Link"
+    cv_picture_col = None  # We won't display an image for area
     cv_name_col = "Area"
 
 # Round CV if desired
@@ -202,33 +202,39 @@ tab1, tab2 = st.tabs(["Activity", "Contract Value"])
 ###############################################################################
 with tab1:
     if role == "Energy Consultant":
-        # Display ENERGY CONSULTANT data_editor
         st.data_editor(
             ec_grouped_df,
-            column_config={ec_picture_col: st.column_config.ImageColumn("")},
+            column_config={ec_picture_col: st.column_config.ImageColumn("")}
+            if ec_picture_col in ec_grouped_df.columns
+            else None,
             column_order=[
-                ec_picture_col,
-                ec_name_col,
-                "Sales",
-                "Sits",
-                "Opps"
+                col for col in (
+                    ec_picture_col,
+                    ec_name_col,
+                    "Sales",
+                    "Sits",
+                    "Opps"
+                ) if col in ec_grouped_df.columns
             ],
             hide_index=True,
             height=1000,
             disabled=True,
             use_container_width=True,
         )
-    else:
-        # Display FIELD MARKETER data_editor
+    else:  # Field Marketer
         st.data_editor(
             fm_grouped_df,
-            column_config={fm_picture_col: st.column_config.ImageColumn("")},
+            column_config={fm_picture_col: st.column_config.ImageColumn("")}
+            if fm_picture_col in fm_grouped_df.columns
+            else None,
             column_order=[
-                fm_picture_col,
-                fm_name_col,
-                "Assists",
-                "Sits",
-                "Sets"
+                col for col in (
+                    fm_picture_col,
+                    fm_name_col,
+                    "Assists",
+                    "Sits",
+                    "Sets"
+                ) if col in fm_grouped_df.columns
             ],
             hide_index=True,
             height=1000,
@@ -240,20 +246,39 @@ with tab1:
 # TAB 2 (Contract Value)
 ###############################################################################
 with tab2:
-    st.data_editor(
-        cv_grouped_df,
-        column_config={cv_picture_col: st.column_config.ImageColumn("")},
-        column_order=[
-            cv_picture_col,
-            cv_name_col,
-            "CV",
-            "Solar",
-            "Batteries",
-            "Roofs",
-            "Bundled"
-        ],
-        hide_index=True,
-        disabled=True,
-        use_container_width=True,
-        height=1000
-    )
+    # If we have a picture column for CV (e.g. Closer Picture Link or FM Picture Link)
+    if cv_picture_col and cv_picture_col in cv_grouped_df.columns:
+        st.data_editor(
+            cv_grouped_df,
+            column_config={cv_picture_col: st.column_config.ImageColumn("")},
+            column_order=[
+                cv_picture_col,
+                cv_name_col,
+                "CV",
+                "Solar",
+                "Batteries",
+                "Roofs",
+                "Bundled",
+            ],
+            hide_index=True,
+            disabled=True,
+            use_container_width=True,
+            height=1000,
+        )
+    else:
+        # No valid picture column, so skip that in the display
+        st.data_editor(
+            cv_grouped_df,
+            column_order=[
+                cv_name_col,
+                "CV",
+                "Solar",
+                "Batteries",
+                "Roofs",
+                "Bundled",
+            ],
+            hide_index=True,
+            disabled=True,
+            use_container_width=True,
+            height=1000,
+        )
