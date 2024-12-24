@@ -37,11 +37,11 @@ fm_df = fm_leaderboard_query()
 #      - "Sale Date" as the date column
 #      - "Area"
 #      - "Closer" or "Field Marketer" (depending on role)
-#      - Possibly "Closer Picture Link" or "FM Picture Link" if you have images
+#      - "Area Picture Link" if you want to show an image for Area
 df_cv = cv_query()
 
 ###############################################################################
-# Get unique areas (you could also pull from df_cv if you prefer)
+# Get unique areas
 ###############################################################################
 unique_areas = sorted(df["Area"].unique())
 
@@ -177,16 +177,15 @@ if dimension == "Rep":
         cv_name_col = "Field Marketer"
 
 else:  # dimension == "Area"
-    # NOTE: If your df_cv does NOT have "Area Picture Link", remove it from groupby
-    #       We'll remove it here to avoid KeyErrors.
+    # If your df_cv has "Area Picture Link", group by both "Area" and "Area Picture Link".
     cv_grouped_df = (
         df_cv_filtered
-        .groupby("Area", as_index=False)
+        .groupby(["Area", "Area Picture Link"], as_index=False)
         [["CV", "Solar", "Batteries", "Roofs", "Bundled"]]
         .sum()
         .sort_values("CV", ascending=False)
     )
-    cv_picture_col = None  # We won't display an image for area
+    cv_picture_col = "Area Picture Link"
     cv_name_col = "Area"
 
 # Round CV if desired
@@ -201,6 +200,7 @@ tab1, tab2 = st.tabs(["Activity", "Contract Value"])
 # TAB 1 (Activity)
 ###############################################################################
 with tab1:
+    # If "Energy Consultant" was selected
     if role == "Energy Consultant":
         st.data_editor(
             ec_grouped_df,
@@ -208,33 +208,38 @@ with tab1:
             if ec_picture_col in ec_grouped_df.columns
             else None,
             column_order=[
-                col for col in (
+                col
+                for col in (
                     ec_picture_col,
                     ec_name_col,
                     "Sales",
                     "Sits",
                     "Opps"
-                ) if col in ec_grouped_df.columns
+                )
+                if col in ec_grouped_df.columns
             ],
             hide_index=True,
             height=1000,
             disabled=True,
             use_container_width=True,
         )
-    else:  # Field Marketer
+    # If "Field Marketer" was selected
+    else:
         st.data_editor(
             fm_grouped_df,
             column_config={fm_picture_col: st.column_config.ImageColumn("")}
             if fm_picture_col in fm_grouped_df.columns
             else None,
             column_order=[
-                col for col in (
+                col
+                for col in (
                     fm_picture_col,
                     fm_name_col,
                     "Assists",
                     "Sits",
                     "Sets"
-                ) if col in fm_grouped_df.columns
+                )
+                if col in fm_grouped_df.columns
             ],
             hide_index=True,
             height=1000,
@@ -246,7 +251,7 @@ with tab1:
 # TAB 2 (Contract Value)
 ###############################################################################
 with tab2:
-    # If we have a picture column for CV (e.g. Closer Picture Link or FM Picture Link)
+    # If we have a valid picture column (e.g., Closer Picture Link, FM Picture Link, or Area Picture Link)
     if cv_picture_col and cv_picture_col in cv_grouped_df.columns:
         st.data_editor(
             cv_grouped_df,
@@ -266,7 +271,7 @@ with tab2:
             height=1000,
         )
     else:
-        # No valid picture column, so skip that in the display
+        # No valid picture column found, so skip that
         st.data_editor(
             cv_grouped_df,
             column_order=[

@@ -31,13 +31,14 @@ def cv_query():
             closer_picture_link "Closer Picture Link",
             fm_picture_link "FM Picture Link",
             lead_generator "Field Marketer",
-            area "Area",
+            tbl_master_opportunities.area "Area",
+            area_links.picture_link "Area Picture Link",
             COUNT(DISTINCT CASE WHEN project_sub_category = 'Solar' THEN id END) "Solar",
             COUNT(DISTINCT CASE WHEN project_sub_category = 'Battery' THEN id END) "Batteries",
             COUNT(DISTINCT CASE WHEN project_sub_category = 'Roof' OR project_sub_category LIKE 'Reroof%' THEN id END) "Roofs",
             COUNT(DISTINCT CASE WHEN project_sub_category LIKE 'Solar +%' THEN id END) "Bundled",
             grand_total - lender_fee_total "CV"
         FROM analytics.reporting.tbl_master_opportunities
-        WHERE sale_date >= '2024-12-01'
+        LEFT JOIN raw.snowflake.area_links ON tbl_master_opportunities.area = area_links.area
         GROUP BY ALL """
     return session.sql(cv_query).to_pandas()
