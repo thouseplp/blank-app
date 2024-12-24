@@ -191,6 +191,8 @@ else:  # dimension == "Area"
 # Round CV if desired
 cv_grouped_df["CV"] = cv_grouped_df["CV"].round(0)
 
+cv_grouped_df['CV'] = cv_grouped_df['CV'].apply(lambda x: f"${x:,.0f}")
+
 ###############################################################################
 # Create two tabs: "Activity" (driven by 'role') and "Contract Value"
 ###############################################################################
