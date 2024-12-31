@@ -28,7 +28,7 @@ def cv_query():
             id,
             sale_date "Sale Date",
             closer "Closer",
-            closer_picture_link "Closer Picture Link",
+            IFNULL(closer_picture_link, 'https://res.cloudinary.com/dwuzrptk6/image/upload/v1730865202/Group_1127_zhbvez.png') "Closer Picture Link",
             fm_picture_link "FM Picture Link",
             lead_generator "Field Marketer",
             tbl_master_opportunities.area "Area",
