@@ -6,6 +6,7 @@ from snowflake.snowpark import Session
 from snowflake.snowpark.functions import col
 
 # Function to create a Snowflake session
+@st.cache_resource
 def create_snowflake_session():
     connection_parameters = {
         "account": st.secrets["snowflake"]["account"],
@@ -17,8 +18,6 @@ def create_snowflake_session():
         "schema": st.secrets["snowflake"]["schema"],
     }
     return Session.builder.configs(connection_parameters).create()
-
-session = create_snowflake_session()
 
 profile_pictures = {
     'Salem': 'https://res.cloudinary.com/dwuzrptk6/image/upload/v1730863720/salem_eckoe1.png',
@@ -40,7 +39,11 @@ profile_pictures = {
     'Utah': 'https://res.cloudinary.com/dwuzrptk6/image/upload/v1733790161/Asset_2_zfodre.png'  # Updated to single entry
 }
 
+@st.cache_data(ttl=600)
 def get_appointments():
+
+    session = create_snowflake_session()
+
     appointments_query = """
         SELECT created_at, id, area, NULL AS GOALS, NULL AS PROFILE_PICTURE FROM analytics.reporting.tbl_master_opportunities WHERE CREATED_AT >= DATEADD("day", -30, CURRENT_DATE) AND area IN ('Salem', 'Portland North', 'Des Moines', 'Minneapolis', 'Portland', 'Pasco', 'Medford', 'Bozeman', 'Cincinnati', 'Helena', 'Cedar Rapids', 'Missoula', 'Puget Sound', 'Spokane', 'Bend', 'Billings', 'Utah') AND lead_generator IS NOT NULL
     """

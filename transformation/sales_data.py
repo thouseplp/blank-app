@@ -7,6 +7,7 @@ from snowflake.snowpark import Session
 from snowflake.snowpark.functions import col
 
 # Function to create a Snowflake session
+@st.cache_resource
 def create_snowflake_session():
     connection_parameters = {
         "account": st.secrets["snowflake"]["account"],
@@ -18,8 +19,6 @@ def create_snowflake_session():
         "schema": st.secrets["snowflake"]["schema"],
     }
     return Session.builder.configs(connection_parameters).create()
-
-session = create_snowflake_session()
 
 profile_pictures = {
     'Salem': 'https://res.cloudinary.com/dwuzrptk6/image/upload/v1730863720/salem_eckoe1.png',
@@ -41,7 +40,11 @@ profile_pictures = {
     'Utah': 'https://res.cloudinary.com/dwuzrptk6/image/upload/v1733790161/Asset_2_zfodre.png'  # Updated to single entry
 }
 
+@st.cache_data(ttl=600)
 def get_sales(month, year):
+
+    session = create_snowflake_session()
+
     sales_query = """
         SELECT 
             sale_date,

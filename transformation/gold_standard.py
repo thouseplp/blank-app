@@ -7,6 +7,7 @@ from snowflake.snowpark import Session
 from snowflake.snowpark.functions import col
 
 # Function to create a Snowflake session
+@st.cache_resource
 def create_snowflake_session():
     connection_parameters = {
         "account": st.secrets["snowflake"]["account"],
@@ -19,9 +20,11 @@ def create_snowflake_session():
     }
     return Session.builder.configs(connection_parameters).create()
 
-session = create_snowflake_session()
-
+@st.cache_data(ttl=600)
 def gs_query():
+
+    session = create_snowflake_session()
+
     gs_query = """
         SELECT MAX(IFNULL("opportunities.current_month_sales_calc", 0) + IFNULL("opportunities.current_month_assists", 0)) current_month_sales_and_assists, MAX(IFNULL("opportunities.previous_month_sales_calc", 0) + IFNULL("opportunities.previous_month_assists", 0)) previous_month_sales_and_assists, "user.name" name, "team_members.effective_date" date, IFNULL("user.picture_link", 'https://res.cloudinary.com/dwuzrptk6/image/upload/v1730865202/Group_1127_zhbvez.png') picture_link, 8 GOAL
         FROM analytics.reporting.tbl_team_members

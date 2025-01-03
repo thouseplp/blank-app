@@ -7,6 +7,7 @@ from snowflake.snowpark import Session
 from snowflake.snowpark.functions import col
 
 # Function to create a Snowflake session
+@st.cache_resource
 def create_snowflake_session():
     connection_parameters = {
         "account": st.secrets["snowflake"]["account"],
@@ -19,10 +20,11 @@ def create_snowflake_session():
     }
     return Session.builder.configs(connection_parameters).create()
 
-session = create_snowflake_session()
-
-
+@st.cache_data(ttl=600)
 def cv_query():
+
+    session = create_snowflake_session()
+
     cv_query = """
         SELECT
             id,

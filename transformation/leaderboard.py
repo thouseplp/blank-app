@@ -7,6 +7,7 @@ from snowflake.snowpark import Session
 from snowflake.snowpark.functions import col
 
 # Function to create a Snowflake session
+@st.cache_resource
 def create_snowflake_session():
     connection_parameters = {
         "account": st.secrets["snowflake"]["account"],
@@ -19,9 +20,11 @@ def create_snowflake_session():
     }
     return Session.builder.configs(connection_parameters).create()
 
-session = create_snowflake_session()
-
+@st.cache_data(ttl=600)
 def leaderboard_query():
+
+    session = create_snowflake_session()
+
     leaderboard_query = """
         SELECT date "Date", closer "Closer", closer_picture_link "Closer Picture Link", area "Area", area_picture_link "Area Picture Link",COUNT(DISTINCT CASE WHEN metric = 'Sales' THEN id END) "Sales", COUNT(DISTINCT CASE WHEN metric = 'Sits' THEN id END) "Sits", COUNT(DISTINCT CASE WHEN metric = 'Opportunities' THEN id END) "Opps"
 FROM analytics.team_reporting.dtbl_sales_leaderboard
@@ -29,7 +32,11 @@ GROUP BY ALL
     """
     return session.sql(leaderboard_query).to_pandas()
 
+@st.cache_data(ttl=600)
 def fm_leaderboard_query():
+
+    session = create_snowflake_session()
+
     fm_leaderboard_query = """
         SELECT date "Date", lead_generator "FM", area "Area", fm_picture_link "FM Picture Link", area_picture_link "Area Picture Link", COUNT(DISTINCT CASE WHEN metric = 'Sales' THEN id END) "Assists", COUNT(DISTINCT CASE WHEN metric = 'Sits' THEN id END) "Sits", COUNT(DISTINCT CASE WHEN metric = 'Sets' THEN id END) "Sets"
 FROM analytics.team_reporting.dtbl_sales_leaderboard

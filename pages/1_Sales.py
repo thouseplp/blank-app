@@ -53,7 +53,6 @@ year = st.sidebar.selectbox(
     index=5  # Default to current year (assuming the list starts 5 years ago)
 )
 
-@st.cache_data(show_spinner=False, ttl=600)
 def get_sales_data(month, year):
     return process_sales_data(month, year)
 
