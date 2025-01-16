@@ -109,7 +109,7 @@ def process_sales_data(month, year):
         'Helena': {'min_goal': 25, 'max_goal': 30},
         'Cedar Rapids': {'min_goal': 20, 'max_goal': 24},
         'Missoula': {'min_goal': 30, 'max_goal': 36},
-        'Puget Sound': {'min_goal': 20, 'max_goal': 24},
+        'Puget Sound': {'min_goal': 35, 'max_goal': 42},
         'Spokane': {'min_goal': 15, 'max_goal': 18},
         'Bend': {'min_goal': 15, 'max_goal': 18},
         'Billings': {'min_goal': 10, 'max_goal': 12},
