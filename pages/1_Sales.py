@@ -69,8 +69,8 @@ for idx, row in df.iterrows():
         sales_target(
             area=row['AREA'],
             pace=row['PACE'],
-            minimum_target=row['MIN_GOALS'],
-            maximum_target=row['MAX_GOALS'],  # Adjust if necessary
+            minimum_target=row['MIN_GOAL'],
+            maximum_target=row['MAX_GOAL'],  # Adjust if necessary
             actual=row['ID'],
             image=row['PROFILE_PICTURE']
         )
