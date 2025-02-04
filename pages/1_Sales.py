@@ -4,19 +4,21 @@ import numpy as np
 from datetime import datetime
 import pytz
 from snowflake.snowpark import Session
-from snowflake.snowpark.functions import col
-from transformation.sales_data import process_sales_data  # Import the function
+from transformation.sales_data import process_sales_data  # Update process_sales_data to accept a session
 from features.progress_bar import sales_target  # Import sales_target function
 
-# Set up Streamlit page configuration
+# ----------------------------
+# Page configuration and styling
+# ----------------------------
 st.set_page_config(
     page_title="Daily Set Goals",
     layout="wide"
 )
 
-st.logo("https://res.cloudinary.com/dwuzrptk6/image/upload/v1732139306/d97489eb-0834-40e3-a5b5-e93c2f0066b3_1-removebg-preview_1_z60jh6.png", size="large")
+# Replace st.logo (which isn’t officially supported) with st.image
+st.image("https://res.cloudinary.com/dwuzrptk6/image/upload/v1732139306/d97489eb-0834-40e3-a5b5-e93c2f0066b3_1-removebg-preview_1_z60jh6.png", width=200)
 
-# Hide Streamlit's default menu, footer, and header
+# Hide default Streamlit elements for a cleaner look
 hide_streamlit_style = """
     <style>
     #MainMenu {visibility: hidden;}
@@ -28,16 +30,13 @@ hide_streamlit_style = """
 """
 st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 
-# Set the local timezone
-local_tz = pytz.timezone('America/Los_Angeles')  # Replace with your time zone
-
-# Get the current date and time in the local timezone
+# ----------------------------
+# Time zone setup and sidebar controls
+# ----------------------------
+local_tz = pytz.timezone('America/Los_Angeles')
 now = datetime.now(local_tz)
 
-# Sidebar for selecting month and year
 st.sidebar.header("Select Month and Year")
-
-# Month selector
 month = st.sidebar.selectbox(
     "Month",
     options=list(range(1, 13)),
@@ -45,25 +44,41 @@ month = st.sidebar.selectbox(
     index=now.month - 1  # Default to current month
 )
 
-# Year selector (adjust the range as needed)
 current_year = now.year
 year = st.sidebar.selectbox(
     "Year",
-    options=list(range(current_year - 5, current_year + 1)),  # Past 5 years + current year
+    options=list(range(current_year - 5, current_year + 1)),
     index=5  # Default to current year (assuming the list starts 5 years ago)
 )
 
-def get_sales_data(month, year):
-    return process_sales_data(month, year)
+# ----------------------------
+# Step 1: Create a Cached Snowflake Session
+# ----------------------------
+@st.cache_resource
+def get_snowflake_session():
+    # Get your connection parameters securely from st.secrets
+    connection_parameters = st.secrets["snowflake"]
+    session = Session.builder.configs(connection_parameters).create()
+    return session
 
-# Process sales data based on selected month and year
+# ----------------------------
+# Step 2: Update Data Retrieval to Use the Cached Session
+# ----------------------------
+def get_sales_data(month, year):
+    session = get_snowflake_session()  # Get the cached Snowflake session
+    # Call process_sales_data with the session; ensure your function is updated accordingly
+    return process_sales_data(session, month, year)
+
+# Retrieve sales data based on selected month and year
 df = get_sales_data(month, year)
 
-# Create columns to display sales targets
-num_columns = 3  # Adjust as needed
+# ----------------------------
+# Step 3: Display Sales Targets in Columns
+# ----------------------------
+num_columns = 3  # Adjust the number of columns as needed
 columns = st.columns(num_columns)
 
-# Iterate over each row in the dataframe and display sales targets
+# Iterate over each row in the dataframe and display a sales target card
 for idx, row in df.iterrows():
     with columns[idx % num_columns]:
         sales_target(
