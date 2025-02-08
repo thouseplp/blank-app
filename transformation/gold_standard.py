@@ -4,21 +4,25 @@ import pandas as pd
 import numpy as np
 from datetime import datetime
 from snowflake.snowpark import Session
+from snowflake.snowpark.context import get_active_session
 from snowflake.snowpark.functions import col
 
 # Function to create a Snowflake session
 @st.cache_resource
 def create_snowflake_session():
-    connection_parameters = {
-        "account": st.secrets["snowflake"]["account"],
-        "user": st.secrets["snowflake"]["user"],
-        "password": st.secrets["snowflake"]["password"],
-        "role": st.secrets["snowflake"]["role"],
-        "warehouse": st.secrets["snowflake"]["warehouse"],
-        "database": st.secrets["snowflake"]["database"],
-        "schema": st.secrets["snowflake"]["schema"],
-    }
-    return Session.builder.configs(connection_parameters).create()
+    try:
+        return get_active_session()
+    except:
+        connection_parameters = {
+            "account": st.secrets["snowflake"]["account"],
+            "user": st.secrets["snowflake"]["user"],
+            "password": st.secrets["snowflake"]["password"],
+            "role": st.secrets["snowflake"]["role"],
+            "warehouse": st.secrets["snowflake"]["warehouse"],
+            "database": st.secrets["snowflake"]["database"],
+            "schema": st.secrets["snowflake"]["schema"],
+        }
+        return Session.builder.configs(connection_parameters).create()
 
 @st.cache_data(ttl=600)
 def gs_query():
