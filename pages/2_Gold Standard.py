@@ -3,7 +3,6 @@ import pandas as pd
 import numpy as np
 from datetime import datetime
 import pytz
-from snowflake.snowpark import Session
 from snowflake.snowpark.functions import col
 from transformation.gold_standard import gs_query
 from features.progress_bar import gold_standard

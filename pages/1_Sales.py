@@ -3,7 +3,6 @@ import pandas as pd
 import numpy as np
 from datetime import datetime
 import pytz
-from snowflake.snowpark import Session
 from snowflake.snowpark.functions import col
 from transformation.sales_data import process_sales_data  # Import the function
 from features.progress_bar import sales_target  # Import sales_target function
